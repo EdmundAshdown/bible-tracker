@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Original spreadsheet: personal reading progress, kept local only.
+# The generated seed.js / bible-data.json are what the app actually uses.
+*Bible Reading.xlsx

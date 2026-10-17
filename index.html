@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bible Tracker</title>
+<meta name="theme-color" content="#0e1117" />
+<meta name="description" content="Track your read-through-the-Bible progress." />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="favicon.ico" sizes="32x32" />
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Bible Tracker" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="storeBanner" class="store-banner" hidden></div>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">✦</span>
+    <div>
+      <h1>Bible Tracker</h1>
+      <p class="subtitle">Read through the whole Bible, one chapter at a time</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button id="settingsBtn" class="btn ghost settings-btn" aria-label="Open settings" title="Settings">⚙</button>
+  </div>
+</header>
+
+<div id="settingsOverlay" class="settings-overlay" hidden>
+  <div class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-head">
+      <h2 id="settingsTitle">Settings</h2>
+      <button id="settingsClose" class="btn ghost small" aria-label="Close settings">✕</button>
+    </div>
+    <label class="translation-picker">
+      <span>Bible.com translation</span>
+      <select id="translationSelect" aria-label="Bible.com translation"></select>
+    </label>
+    <p class="hint">Every chapter link opens on Bible.com in this translation.</p>
+    <div class="settings-row">
+      <button id="exportBtn" class="btn ghost" title="Download your progress as JSON">Export</button>
+      <button id="importBtn" class="btn ghost" title="Restore progress from a JSON file">Import</button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+      <button id="resetBtn" class="btn danger-ghost" title="Clear all progress">Reset</button>
+    </div>
+    <p class="hint">Progress auto-saves in this browser. Export a backup after big reading sessions.</p>
+  </div>
+</div>
+
+<main>
+  <!-- Continue reading hero -->
+  <section class="hero" id="heroSection" aria-label="Continue reading"></section>
+
+  <!-- Dashboard stats -->
+  <section class="dashboard" aria-label="Progress dashboard">
+    <div class="ring-card card">
+      <div class="ring" id="overallRing" role="img" aria-label="Overall completion">
+        <div class="ring-center">
+          <strong id="overallPct">–</strong>
+          <span>complete</span>
+        </div>
+      </div>
+      <div class="ring-caption"><strong id="chaptersRead">–</strong> of <span id="chaptersTotal">–</span> chapters read</div>
+    </div>
+    <div class="card testament-card">
+      <div class="testament-row">
+        <div class="testament-label"><span class="dot ot"></span>Old Testament</div>
+        <div class="testament-pct" id="otPct">–</div>
+      </div>
+      <div class="bar"><div class="bar-fill ot-fill" id="otBar"></div></div>
+      <div class="testament-count" id="otCount">–</div>
+      <div class="testament-row">
+        <div class="testament-label"><span class="dot nt"></span>New Testament</div>
+        <div class="testament-pct" id="ntPct">–</div>
+      </div>
+      <div class="bar"><div class="bar-fill nt-fill" id="ntBar"></div></div>
+      <div class="testament-count" id="ntCount">–</div>
+    </div>
+    <div class="stat-grid">
+      <div class="card stat"><div class="stat-value" id="booksDone">–</div><div class="stat-label">Books finished</div></div>
+      <div class="card stat"><div class="stat-value" id="streak">–</div><div class="stat-label" id="streakLabel">Day streak</div></div>
+      <div class="card stat"><div class="stat-value" id="weekCount">–</div><div class="stat-label">Chapters this week</div></div>
+      <div class="card stat"><div class="stat-value" id="eta">–</div><div class="stat-label" id="etaLabel">Pace estimate</div></div>
+    </div>
+  </section>
+
+  <!-- Plan: target date + daily streams -->
+  <section class="plan-grid" aria-label="Reading plan">
+    <div class="card" id="planCard"></div>
+    <div class="card" id="streamCard"></div>
+  </section>
+
+  <!-- Per-genre progress -->
+  <section class="card genres" aria-label="Progress by genre">
+    <div class="section-head" style="margin-top:0">
+      <h2>Progress by genre</h2>
+    </div>
+    <div id="genreRows" class="genre-rows"></div>
+  </section>
+
+  <!-- Recently read -->
+  <section class="card recent" aria-label="Streak and reading history">
+    <div class="section-head">
+      <h2>Streak &amp; history</h2>
+      <span class="hint" id="recentHint"></span>
+    </div>
+    <div id="streakBlock"></div>
+    <div class="reminder-row">
+      <label class="reminder-toggle">
+        <input type="checkbox" id="notifEnable" />
+        <span>Daily streak reminder</span>
+      </label>
+      <input type="time" id="notifTime" value="08:00" aria-label="Reminder time" />
+      <span class="hint" id="notifNote">Shows while the app is open.</span>
+    </div>
+    <ul id="recentList" class="recent-list"></ul>
+  </section>
+
+  <!-- Books -->
+  <section aria-label="Books">
+    <div class="section-head books-head">
+      <h2>Books <span class="count-pill" id="bookCount"></span></h2>
+      <div class="filters">
+        <input type="search" id="searchInput" placeholder="Search books…" aria-label="Search books" />
+        <div class="segmented" role="group" aria-label="Testament filter">
+          <button data-testament="all" class="active">All</button>
+          <button data-testament="Old Testament">OT</button>
+          <button data-testament="New Testament">NT</button>
+        </div>
+        <select id="statusFilter" aria-label="Status filter">
+          <option value="all">All statuses</option>
+          <option value="in-progress">In progress</option>
+          <option value="not-started">Not started</option>
+          <option value="complete">Complete</option>
+        </select>
+        <select id="genreFilter" aria-label="Genre filter">
+          <option value="all">All genres</option>
+        </select>
+        <select id="sortSelect" aria-label="Sort books">
+          <option value="canonical">Bible order</option>
+          <option value="progress-desc">Progress: high → low</option>
+          <option value="progress-asc">Progress: low → high</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="bookGrid" class="book-grid"></div>
+  </section>
+</main>
+
+<footer>
+  <p>Progress is saved in this browser automatically. Use Export to back it up. Chapter links open on Bible.com in your chosen translation.</p>
+  <p class="storage-status" id="storageStatus"></p>
+</footer>
+
+<script src="seed.js"></script>
+<script src="app.js"></script>
+<script>
+  // Offline support + installability (http(s) only — skipped on file://).
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
