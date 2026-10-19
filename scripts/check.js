@@ -282,6 +282,7 @@ if (!markErr) {
   eq("daily tally records today", logged.days[today], 1);
   ok("book recency recorded", typeof logged.bookLast.Genesis === "number" && logged.bookLast.Genesis > 0);
   eq("streak starts at one day", fresh.text("streak"), "1 day");
+  ok("hero follows the read", fresh.html("heroSection").indexOf("Genesis 2") !== -1, fresh.html("heroSection").slice(0, 80));
 }
 
 // ---------- 5. stores from older versions still load ----------

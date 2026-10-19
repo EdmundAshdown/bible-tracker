@@ -207,6 +207,18 @@
     }
     return null;
   }
+  // "Up next": follow the most recently worked-on in-progress book rather than
+  // the first gap in Bible order, so a partially-read book from months ago
+  // (e.g. Psalms 135) doesn't hijack the hero while you're actively reading
+  // something else. Falls back to the first unread chapter in Bible order.
+  function nextUp() {
+    var resume = inProgressBooks();
+    if (resume.length) {
+      var s = bookStats(resume[0].name);
+      if (s.next !== -1) return { book: resume[0].name, chapter: s.next };
+    }
+    return firstUnreadCanonical();
+  }
   function inProgressBooks() {
     return SEED.books.filter(function (b) {
       var s = bookStats(b.name);
@@ -480,7 +492,7 @@
 
   function renderHero() {
     var el = $("heroSection");
-    var next = firstUnreadCanonical();
+    var next = nextUp();
     if (!next) {
       el.innerHTML =
         '<div class="hero-eyebrow">Finished</div>' +
