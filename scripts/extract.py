@@ -1,11 +1,17 @@
-"""Regenerate bible-data.json from the source spreadsheet.
+"""Regenerate seed.js + bible-data.json from the source spreadsheet.
 
 Usage:
     python3 scripts/extract.py
 
 Reads ' ~/Developer/bible-tracker/ Bible Reading.xlsx' (note leading space),
-pulls book metadata + per-chapter read flags from the Tracker sheet and the
-translation table from the Translations sheet, and writes bible-data.json.
+pulls book metadata + chapter counts from the Tracker sheet and the
+translation table from the Translations sheet, and writes seed.js +
+bible-data.json.
+
+This is deliberately structure-only: the app starts empty for everyone, so the
+spreadsheet's own read/unread checkboxes are counted (how many chapters a book
+has) but never exported. To move personal progress between browsers, use the
+app's Export / Import buttons.
 """
 import json
 import os
@@ -23,12 +29,11 @@ def main():
     books = []
     for r in range(2, 68):  # rows 2..67 = 66 books
         name = ws.cell(r, 1).value
-        chapters = []
+        count = 0
         for c in range(10, 10 + 160):  # cols J.. = chapter 1..N
-            v = ws.cell(r, c).value
-            if v is None:
+            if ws.cell(r, c).value is None:
                 break
-            chapters.append(bool(v))
+            count += 1
         books.append(
             {
                 "name": name,
@@ -36,7 +41,7 @@ def main():
                 "classification": ws.cell(r, 4).value,
                 "category": ws.cell(r, 5).value,
                 "subCategory": ws.cell(r, 6).value,
-                "chapters": chapters,  # index 0 = chapter 1; true = read
+                "chapters": count,  # how many chapters the book has; no read state
             }
         )
 
@@ -59,9 +64,8 @@ def main():
         f.write("window.BIBLE_SEED = ")
         json.dump(data, f, separators=(",", ":"))
         f.write(";\n")
-    read = sum(sum(1 for x in b["chapters"] if x) for b in books)
-    total = sum(len(b["chapters"]) for b in books)
-    print(f"books={len(books)} chapters={read}/{total} translations={len(translations)} -> {OUT}")
+    total = sum(b["chapters"] for b in books)
+    print(f"books={len(books)} chapters={total} translations={len(translations)} -> {OUT}")
 
 
 if __name__ == "__main__":

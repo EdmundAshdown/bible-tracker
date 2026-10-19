@@ -30,7 +30,11 @@ worker, which also clears the old cache).
 
 ## Where your data lives
 
-Progress saves to the browser's `localStorage` **per origin** — the
+Every install starts **empty** — nothing is marked read until you mark it
+yourself. The tracker ships no reading progress from anyone else, so a fresh
+browser, a new device, or a friend's copy all begin at 0%.
+
+Progress then saves to the browser's `localStorage` **per origin** — the
 double-clicked file (`file://`), `http://localhost:8901`, and the
 dock-pinned app each have their own separate store. So pick one way to
 open the app (the dock icon is the best one) and stick with it; the footer
@@ -43,13 +47,14 @@ regardless.
 
 - **Up-next hero** — first unread chapter in Bible order, with one-click
   "Mark as read" and a deep link to read it on Bible.com. Plus resume chips
-  for every in-progress book.
+  for every in-progress book. On a brand-new (or freshly reset) tracker the
+  hero instead explains that nothing is marked read yet and where progress
+  lives.
 - **Dashboard** — overall % ring, OT / NT progress bars, books finished,
   day streak, chapters this week, and a finish-date estimate from your
   7-day pace.
-- **Recently read** — timestamped history of chapters you log in the app.
-  (The spreadsheet tracked only checked boxes, not dates, so history starts
-  fresh from your first logged read.)
+- **Recently read** — timestamped history of chapters you log in the app, so
+  your streak and pace estimate grow as you read.
 - **Streak & history section** — 🔥 current day-streak with all-time best,
   a 26-week activity heatmap, a cumulative progress chart, the full
   timestamped log, and an optional daily streak reminder (fires while the
@@ -77,7 +82,7 @@ regardless.
 | File | Purpose |
 |---|---|
 | `index.html` / `styles.css` / `app.js` | The app |
-| `seed.js` | Initial reading state, generated from the spreadsheet |
+| `seed.js` | Book list, chapter counts and translations, generated from the spreadsheet (no reading progress) |
 | `bible-data.json` | Same data in plain JSON (reference / debugging) |
 | `scripts/extract.py` | Regenerates `seed.js` + `bible-data.json` from the `.xlsx` |
 | `scripts/make_icons.py` | Regenerates the PWA icons in `icons/` |
@@ -85,19 +90,20 @@ regardless.
 | `start-server.sh` | Serves the app on http://localhost:8901 for installing |
 | ` Bible Reading.xlsx` | Original spreadsheet — kept locally, intentionally not committed |
 
-## Re-importing from the spreadsheet
+## Regenerating the book data from the spreadsheet
 
 This needs the original ` Bible Reading.xlsx` sitting next to the scripts. It
-is deliberately not committed here — it holds personal reading progress, and
-`seed.js` / `bible-data.json` already carry everything the app needs. Keep your
-own copy alongside the project.
+is deliberately not committed here, and only its *structure* is used: book
+order, testament, genre and chapter counts.
 
-If you update the checkboxes in Excel, re-run:
+If you change the book list or chapter counts in Excel, re-run:
 
 ```sh
 python3 scripts/extract.py
 ```
 
-then reload the page. Note: re-importing replaces the seed; any reads you
-logged only in the app (and their history) live in the browser — export a
-backup first if you want to keep them.
+then reload the page. The extract deliberately ignores the spreadsheet's own
+read/unread checkboxes — the app starts empty for everyone, so personal
+progress never ships inside `seed.js`. Regenerating therefore never touches
+what you've logged in the browser (exports and history are unaffected); to
+move progress between browsers or devices, use **Export / Import** in Settings.

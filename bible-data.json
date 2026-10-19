@@ -8,58 +8,7 @@
    "classification": "Pentateuch",
    "category": "Pentateuch",
    "subCategory": "Pentateuch",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 50
   },
   {
    "name": "Exodus",
@@ -67,48 +16,7 @@
    "classification": "Pentateuch",
    "category": "Pentateuch",
    "subCategory": "Pentateuch",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 40
   },
   {
    "name": "Leviticus",
@@ -116,35 +24,7 @@
    "classification": "Pentateuch",
    "category": "Pentateuch",
    "subCategory": "Pentateuch",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 27
   },
   {
    "name": "Numbers",
@@ -152,44 +32,7 @@
    "classification": "Pentateuch",
    "category": "Pentateuch",
    "subCategory": "Pentateuch",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 36
   },
   {
    "name": "Deuteronomy",
@@ -197,42 +40,7 @@
    "classification": "Pentateuch",
    "category": "Pentateuch",
    "subCategory": "Pentateuch",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 34
   },
   {
    "name": "Joshua",
@@ -240,32 +48,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 24
   },
   {
    "name": "Judges",
@@ -273,29 +56,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 21
   },
   {
    "name": "Ruth",
@@ -303,12 +64,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 4
   },
   {
    "name": "1 Samuel",
@@ -316,39 +72,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 31
   },
   {
    "name": "2 Samuel",
@@ -356,32 +80,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 24
   },
   {
    "name": "1 Kings",
@@ -389,30 +88,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 22
   },
   {
    "name": "2 Kings",
@@ -420,33 +96,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 25
   },
   {
    "name": "1 Chronicles",
@@ -454,37 +104,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 29
   },
   {
    "name": "2 Chronicles",
@@ -492,44 +112,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 36
   },
   {
    "name": "Ezra",
@@ -537,18 +120,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 10
   },
   {
    "name": "Nehemiah",
@@ -556,21 +128,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 13
   },
   {
    "name": "Esther",
@@ -578,18 +136,7 @@
    "classification": "History",
    "category": "History",
    "subCategory": "History",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 10
   },
   {
    "name": "Job",
@@ -597,50 +144,7 @@
    "classification": "Poetry",
    "category": "Poetry",
    "subCategory": "Poetry",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 42
   },
   {
    "name": "Psalms",
@@ -648,158 +152,7 @@
    "classification": "Poetry",
    "category": "Poetry",
    "subCategory": "Poetry",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 150
   },
   {
    "name": "Proverbs",
@@ -807,39 +160,7 @@
    "classification": "Poetry",
    "category": "Poetry",
    "subCategory": "Poetry",
-   "chapters": [
-    true,
-    true,
-    false,
-    true,
-    true,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 31
   },
   {
    "name": "Ecclesiastes",
@@ -847,20 +168,7 @@
    "classification": "Poetry",
    "category": "Poetry",
    "subCategory": "Poetry",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 12
   },
   {
    "name": "Song of Solomon",
@@ -868,16 +176,7 @@
    "classification": "Poetry",
    "category": "Poetry",
    "subCategory": "Poetry",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 8
   },
   {
    "name": "Isaiah",
@@ -885,74 +184,7 @@
    "classification": "Prophecy",
    "category": "Major",
    "subCategory": "Major",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 66
   },
   {
    "name": "Jeremiah",
@@ -960,60 +192,7 @@
    "classification": "Prophecy",
    "category": "Major",
    "subCategory": "Major",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 52
   },
   {
    "name": "Lamentations",
@@ -1021,13 +200,7 @@
    "classification": "Prophecy",
    "category": "Major",
    "subCategory": "Major",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 5
   },
   {
    "name": "Ezekiel",
@@ -1035,56 +208,7 @@
    "classification": "Prophecy",
    "category": "Major",
    "subCategory": "Major",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 48
   },
   {
    "name": "Daniel",
@@ -1092,20 +216,7 @@
    "classification": "Prophecy",
    "category": "Major",
    "subCategory": "Major",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 12
   },
   {
    "name": "Hosea",
@@ -1113,22 +224,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 14
   },
   {
    "name": "Joel",
@@ -1136,11 +232,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false
-   ]
+   "chapters": 3
   },
   {
    "name": "Amos",
@@ -1148,17 +240,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 9
   },
   {
    "name": "Obadiah",
@@ -1166,9 +248,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false
-   ]
+   "chapters": 1
   },
   {
    "name": "Jonah",
@@ -1176,12 +256,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 4
   },
   {
    "name": "Micah",
@@ -1189,15 +264,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 7
   },
   {
    "name": "Nahum",
@@ -1205,11 +272,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false
-   ]
+   "chapters": 3
   },
   {
    "name": "Habakkuk",
@@ -1217,11 +280,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false
-   ]
+   "chapters": 3
   },
   {
    "name": "Zephaniah",
@@ -1229,11 +288,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    true,
-    true,
-    true
-   ]
+   "chapters": 3
   },
   {
    "name": "Haggai",
@@ -1241,10 +296,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false
-   ]
+   "chapters": 2
   },
   {
    "name": "Zechariah",
@@ -1252,22 +304,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 14
   },
   {
    "name": "Malachi",
@@ -1275,12 +312,7 @@
    "classification": "Prophecy",
    "category": "Minor",
    "subCategory": "Minor",
-   "chapters": [
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 4
   },
   {
    "name": "Matthew",
@@ -1288,36 +320,7 @@
    "classification": "History",
    "category": "Gospels",
    "subCategory": "Gospels",
-   "chapters": [
-    true,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 28
   },
   {
    "name": "Mark",
@@ -1325,24 +328,7 @@
    "classification": "History",
    "category": "Gospels",
    "subCategory": "Gospels",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 16
   },
   {
    "name": "Luke",
@@ -1350,32 +336,7 @@
    "classification": "History",
    "category": "Gospels",
    "subCategory": "Gospels",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 24
   },
   {
    "name": "John",
@@ -1383,29 +344,7 @@
    "classification": "History",
    "category": "Gospels",
    "subCategory": "Gospels",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 21
   },
   {
    "name": "Acts",
@@ -1413,36 +352,7 @@
    "classification": "History",
    "category": "Early Church History",
    "subCategory": "Early Church History",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 28
   },
   {
    "name": "Romans",
@@ -1450,24 +360,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 16
   },
   {
    "name": "1 Corinthians",
@@ -1475,24 +368,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 16
   },
   {
    "name": "2 Corinthians",
@@ -1500,21 +376,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    false,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 13
   },
   {
    "name": "Galatians",
@@ -1522,14 +384,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 6
   },
   {
    "name": "Ephesians",
@@ -1537,14 +392,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Prison",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 6
   },
   {
    "name": "Philippians",
@@ -1552,12 +400,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Prison",
-   "chapters": [
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 4
   },
   {
    "name": "Colossians",
@@ -1565,12 +408,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Prison",
-   "chapters": [
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 4
   },
   {
    "name": "1 Thessalonians",
@@ -1578,13 +416,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 5
   },
   {
    "name": "2 Thessalonians",
@@ -1592,11 +424,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pauline Letters",
-   "chapters": [
-    false,
-    false,
-    false
-   ]
+   "chapters": 3
   },
   {
    "name": "1 Timothy",
@@ -1604,14 +432,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pastoral",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 6
   },
   {
    "name": "2 Timothy",
@@ -1619,12 +440,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pastoral",
-   "chapters": [
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 4
   },
   {
    "name": "Titus",
@@ -1632,11 +448,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Pastoral",
-   "chapters": [
-    false,
-    false,
-    false
-   ]
+   "chapters": 3
   },
   {
    "name": "Philemon",
@@ -1644,9 +456,7 @@
    "classification": "Epistles",
    "category": "Pauline Letters",
    "subCategory": "Prison",
-   "chapters": [
-    true
-   ]
+   "chapters": 1
   },
   {
    "name": "Hebrews",
@@ -1654,21 +464,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 13
   },
   {
    "name": "James",
@@ -1676,13 +472,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 5
   },
   {
    "name": "1 Peter",
@@ -1690,13 +480,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 5
   },
   {
    "name": "2 Peter",
@@ -1704,11 +488,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true,
-    true,
-    true
-   ]
+   "chapters": 3
   },
   {
    "name": "1 John",
@@ -1716,13 +496,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true
-   ]
+   "chapters": 5
   },
   {
    "name": "2 John",
@@ -1730,9 +504,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true
-   ]
+   "chapters": 1
   },
   {
    "name": "3 John",
@@ -1740,9 +512,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true
-   ]
+   "chapters": 1
   },
   {
    "name": "Jude",
@@ -1750,9 +520,7 @@
    "classification": "Epistles",
    "category": "General Letters",
    "subCategory": "General Letters",
-   "chapters": [
-    true
-   ]
+   "chapters": 1
   },
   {
    "name": "Revelation",
@@ -1760,30 +528,7 @@
    "classification": null,
    "category": "Prophecy",
    "subCategory": "Prophecy",
-   "chapters": [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-   ]
+   "chapters": 22
   }
  ],
  "translations": [

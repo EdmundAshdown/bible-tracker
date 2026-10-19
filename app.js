@@ -23,14 +23,24 @@
   }
 
   // ---------- State ----------
-  function seedRead() {
+  // Every install starts empty: seed.js only carries structure (book list +
+  // chapter counts), never reading progress. Reads are whatever you log here.
+  function chapterCount(b) {
+    if (typeof b.chapters === "number") return b.chapters;
+    return b.chapters ? b.chapters.length : 0;
+  }
+  function emptyRead() {
     var read = {};
-    SEED.books.forEach(function (b) { read[b.name] = b.chapters.slice(); });
+    SEED.books.forEach(function (b) {
+      var arr = [];
+      for (var i = 0, n = chapterCount(b); i < n; i++) arr.push(false);
+      read[b.name] = arr;
+    });
     return read;
   }
   function defaultState() {
     return {
-      read: seedRead(),
+      read: emptyRead(),
       history: [],
       translation: SEED.defaultTranslationAbbr,
       plan: { target: null },
@@ -339,10 +349,17 @@
       return '<button class="resume-chip" data-resume="' + esc(b.name) + '">' +
         esc(b.name) + " " + s.next + " <small>" + fmtPct(s.pct) + "</small></button>";
     }).join("");
+    // Nothing logged yet — a brand-new (or freshly reset) tracker. Say what this
+    // is and how progress is kept, instead of a bare "Up next Genesis 1".
+    var all = totals(null);
+    var fresh = all.read === 0;
     el.innerHTML =
-      '<div class="hero-eyebrow">Up next</div>' +
+      '<div class="hero-eyebrow">' + (fresh ? "Start here" : "Up next") + "</div>" +
       '<h2 class="hero-title">' + esc(next.book) + " " + next.chapter + "</h2>" +
-      '<p class="hero-sub">First unread chapter in Bible order · ' + esc(translation().name) + " on Bible.com</p>" +
+      '<p class="hero-sub">' + (fresh
+        ? "Nothing marked read yet — 0 of " + all.total.toLocaleString() + " chapters. Tick them off as you read; " +
+          "progress saves in this browser, and Export / Import moves it between devices."
+        : "First unread chapter in Bible order · " + esc(translation().name) + " on Bible.com") + "</p>" +
       '<div class="hero-actions">' +
         '<button class="btn primary" id="heroMark">Mark as read ✓</button>' +
         '<a class="btn ghost" href="' + chapterUrl(next.book, next.chapter) + '" target="_blank" rel="noopener">Read on Bible.com ↗</a>' +
@@ -544,8 +561,7 @@
     if (!state.history.length) {
       $("recentHint").textContent = "";
       list.innerHTML = '<li class="empty-note" style="border:none;background:none;padding:0">' +
-        "No reads logged here yet — the spreadsheet didn't track dates, so history starts fresh. " +
-        "Mark a chapter below and it will show up here with a timestamp, feeding your streak.</li>";
+        "No reads logged here yet — mark a chapter below and it will show up here with a timestamp, feeding your streak.</li>";
       return;
     }
     $("recentHint").textContent = state.history.length + " logged";
@@ -878,7 +894,7 @@
       r.readAsText(f);
     });
     $("resetBtn").addEventListener("click", function () {
-      if (!confirm("Clear all reading progress and start over from the spreadsheet import?")) return;
+      if (!confirm("Clear all reading progress, notes and history, and start over with an empty tracker?")) return;
       state = defaultState();
       try { localStorage.removeItem(STORE_KEY); } catch (e) {}
       filters = { q: "", testament: "all", status: "all", genre: "all", sort: "canonical" };

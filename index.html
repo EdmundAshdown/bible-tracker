@@ -156,7 +156,9 @@
 <footer>
   <p>Progress is saved in this browser automatically. Use Export to back it up. Chapter links open on Bible.com in your chosen translation.</p>
   <p class="storage-status" id="storageStatus"></p>
-  <p><a href="../privacy.html" style="color: var(--accent);">Privacy Policy</a></p>
+  <!-- Absolute URL: the deployed app sits at /bible-tracker/, so ../privacy.html only
+       resolves on the live site — localhost and file:// need the full address. -->
+  <p><a href="https://edmundashdown.github.io/privacy.html" style="color: var(--accent);">Privacy Policy</a></p>
 </footer>
 
 <script src="seed.js"></script>
