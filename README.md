@@ -83,15 +83,16 @@ regardless.
 ## Tests
 
 ```sh
-node scripts/check.js
+npm test          # or: node scripts/check.js
 ```
 
-No dependencies, no build step — it loads the app into a small DOM stub and
-asserts the things that are easy to break by accident: the seed still describes
-all 66 books / 1,189 chapters / 74 translations **and ships no reading
-progress**, the service worker precaches every file it names, a fresh install
-boots empty, a store saved by an older version still loads, and stats survive
-past the 500-event history cap. Run it before committing.
+No dependencies, no build step, and nothing to install — `package.json` only
+wraps the test command. It loads the app into a small DOM stub and asserts the
+things that are easy to break by accident: the seed still describes all 66
+books / 1,189 chapters / 74 translations **and ships no reading progress**, the
+service worker precaches every file it names, a fresh install boots empty, a
+store saved by an older version still loads, and stats survive past the
+500-event history cap. Run it before committing.
 
 ## Files
 
@@ -100,7 +101,8 @@ past the 500-event history cap. Run it before committing.
 | `index.html` / `styles.css` / `app.js` | The app |
 | `seed.js` | Book list, chapter counts and translations, generated from the spreadsheet (no reading progress) |
 | `bible-data.json` | Same data in plain JSON (reference / debugging) |
-| `scripts/check.js` | Smoke test — `node scripts/check.js` |
+| `scripts/check.js` | Smoke test — `npm test` |
+| `package.json` | Only wraps `npm test`; no dependencies |
 | `scripts/extract.py` | Regenerates `seed.js` + `bible-data.json` from the `.xlsx` |
 | `scripts/make_icons.py` | Regenerates the PWA icons in `icons/` |
 | `manifest.webmanifest`, `sw.js`, `favicon.ico`, `icons/` | PWA assets (dock install + offline) |

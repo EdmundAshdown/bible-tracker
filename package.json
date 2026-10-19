@@ -1,0 +1,9 @@
+{
+  "name": "bible-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zero-dependency PWA for tracking a read-through-the-Bible",
+  "scripts": {
+    "test": "node scripts/check.js"
+  }
+}
