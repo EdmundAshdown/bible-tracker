@@ -212,6 +212,8 @@ select, input[type="search"] {
   border-radius: 12px; padding: 10px 14px; font-size: 13px;
 }
 .store-banner code { color: var(--accent); }
+.update-banner { background: rgba(61, 220, 132, 0.12); border-color: rgba(61, 220, 132, 0.5); }
+.store-banner .btn { margin-left: 8px; vertical-align: middle; }
 .storage-status { color: var(--muted); font-size: 12px; }
 
 /* ---------- Plan + streams ---------- */

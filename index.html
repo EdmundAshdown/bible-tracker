@@ -18,6 +18,7 @@
 </head>
 <body>
 <div id="storeBanner" class="store-banner" hidden></div>
+<div id="updateBanner" class="store-banner update-banner" hidden></div>
 <header class="topbar">
   <div class="brand">
     <span class="brand-mark" aria-hidden="true">✦</span>
@@ -48,6 +49,7 @@
       <input type="file" id="importFile" accept="application/json" hidden />
       <button id="resetBtn" class="btn danger-ghost" title="Clear all progress">Reset</button>
     </div>
+    <p class="hint" id="backupStatus"></p>
     <p class="hint">Progress auto-saves in this browser. Export a backup after big reading sessions.</p>
   </div>
 </div>
@@ -126,7 +128,7 @@
     <div class="section-head books-head">
       <h2>Books <span class="count-pill" id="bookCount"></span></h2>
       <div class="filters">
-        <input type="search" id="searchInput" placeholder="Search books…" aria-label="Search books" />
+        <input type="search" id="searchInput" placeholder="Search book, genre or code…" aria-label="Search books" />
         <div class="segmented" role="group" aria-label="Testament filter">
           <button data-testament="all" class="active">All</button>
           <button data-testament="Old Testament">OT</button>
@@ -167,7 +169,29 @@
   // Offline support + installability (http(s) only — skipped on file://).
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () {});
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        // A newer worker is installed and waiting to take over, but this page is
+        // still running the old code — offer a reload instead of hoping you do it twice.
+        function offerReload(worker) {
+          if (!worker || !navigator.serviceWorker.controller) return; // first install: nothing to swap
+          var banner = document.getElementById("updateBanner");
+          if (!banner || !banner.hidden) return;
+          banner.innerHTML = "A new version of Bible Tracker is ready. " +
+            '<button class="btn primary small" id="updateReload">Reload</button>' +
+            '<button class="btn ghost small" id="updateLater">Later</button>';
+          banner.hidden = false;
+          document.getElementById("updateReload").addEventListener("click", function () { location.reload(); });
+          document.getElementById("updateLater").addEventListener("click", function () { banner.hidden = true; });
+        }
+        if (reg.waiting) offerReload(reg.waiting);
+        reg.addEventListener("updatefound", function () {
+          var next = reg.installing;
+          if (!next) return;
+          next.addEventListener("statechange", function () {
+            if (next.state === "installed") offerReload(next);
+          });
+        });
+      }).catch(function () {});
     });
   }
 </script>

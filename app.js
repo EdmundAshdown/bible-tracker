@@ -38,14 +38,24 @@
     });
     return read;
   }
+  // The event log is only the "recently read" list, so it stays capped. All the
+  // long-range stats (streak, best streak, heatmap, pace) read `days` / `bookLast`
+  // instead, which never get trimmed — otherwise a 1,189-chapter tracker would
+  // silently lose its history once you logged more than the cap.
+  var HISTORY_CAP = 500;
+  var DAY_KEY_RE = /^\d{4}-\d{1,2}-\d{1,2}$/;
+
   function defaultState() {
     return {
       read: emptyRead(),
       history: [],
+      days: {},       // "y-m-d" -> chapters marked that day, kept forever
+      bookLast: {},   // book name -> when its most recent chapter was marked
       translation: SEED.defaultTranslationAbbr,
       plan: { target: null },
       notes: {},
       notif: { enabled: false, time: "08:00", last: "" },
+      lastExport: 0,
       savedAt: 0
     };
   }
@@ -64,6 +74,45 @@
     }
     return false;
   }
+  function validDayCounts(obj, out) {
+    if (!obj || typeof obj !== "object") return out;
+    Object.keys(obj).forEach(function (k) {
+      var v = Math.floor(+obj[k]);
+      if (DAY_KEY_RE.test(k) && v > 0 && v <= 1189) out[k] = v;
+    });
+    return out;
+  }
+  function validLastReads(obj) {
+    var out = {};
+    if (!obj || typeof obj !== "object") return out;
+    var known = {};
+    SEED.books.forEach(function (b) { known[b.name] = true; });
+    Object.keys(obj).forEach(function (k) {
+      if (!known[k]) return; // ignore book names this seed doesn't have
+      if (+obj[k] > 0) out[k] = +obj[k];
+    });
+    return out;
+  }
+  function cleanHistory(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(function (h) {
+      return h && typeof h.b === "string" && +h.c > 0 && +h.ts > 0;
+    }).map(function (h) {
+      return { b: h.b, c: Math.floor(+h.c), ts: +h.ts, on: !!h.on };
+    });
+  }
+  // Older saves only had the event log. Rebuild the permanent tallies from it
+  // before that log gets trimmed, so stats never lose data.
+  function talliesFromHistory(hist) {
+    var t = { days: {}, bookLast: {} };
+    hist.forEach(function (h) {
+      if (!h.on) return;
+      var k = dayKey(h.ts);
+      t.days[k] = (t.days[k] || 0) + 1;
+      if (!t.bookLast[h.b] || h.ts > t.bookLast[h.b]) t.bookLast[h.b] = h.ts;
+    });
+    return t;
+  }
   function loadState() {
     try {
       var raw = localStorage.getItem(STORE_KEY);
@@ -77,7 +126,16 @@
           }
         });
       }
-      if (Array.isArray(s.history)) st.history = s.history.slice(0, 500);
+      var hist = cleanHistory(s.history);
+      if (hist.length) st.history = hist.slice(0, HISTORY_CAP);
+      if (s.days) validDayCounts(s.days, st.days);
+      if (s.bookLast) st.bookLast = validLastReads(s.bookLast);
+      if (!s.days || !s.bookLast) {
+        var derived = talliesFromHistory(hist); // pre-tally save: rebuild from the log
+        if (!s.days) st.days = derived.days;
+        if (!s.bookLast) st.bookLast = derived.bookLast;
+      }
+      if (+s.lastExport) st.lastExport = +s.lastExport;
       if (typeof s.translation === "string" && validTranslation(s.translation)) st.translation = s.translation;
       if (s.plan && (s.plan.target === null || typeof s.plan.target === "string")) {
         st.plan = { target: s.plan.target || null };
@@ -153,7 +211,12 @@
     return SEED.books.filter(function (b) {
       var s = bookStats(b.name);
       return s.pct > 0 && s.pct < 1;
-    }).sort(function (a, b) { return bookStats(b.name).pct - bookStats(a.name).pct; });
+    }).sort(function (a, b) {
+      // Most recently worked on first, then whichever is furthest along.
+      var la = state.bookLast[a.name] || 0, lb = state.bookLast[b.name] || 0;
+      if (la !== lb) return lb - la;
+      return bookStats(b.name).pct - bookStats(a.name).pct;
+    });
   }
   function unreadList(testament, onlyBooks) {
     var out = [];
@@ -221,10 +284,10 @@
     return n;
   }
   function cumulativeSeries() {
-    var evs = state.history.filter(function (h) { return h.on; });
-    evs.sort(function (a, b) { return a.ts - b.ts; });
+    var keys = Object.keys(state.days).filter(function (k) { return state.days[k] > 0; });
+    keys.sort(function (a, b) { return dayTs(a) - dayTs(b); });
     var pts = [], n = 0;
-    evs.forEach(function (h) { n++; pts.push({ ts: h.ts, n: n }); });
+    keys.forEach(function (k) { n += state.days[k]; pts.push({ ts: dayTs(k), n: n }); });
     return pts;
   }
   function cumulativeSvg(pts) {
@@ -244,14 +307,24 @@
   }
 
   // ---------- History / streak helpers ----------
+  // Streaks, the heatmap and the pace estimate all read the permanent daily
+  // tallies (`state.days`), never the capped event log — so years of reading
+  // can't quietly fall off the end.
   function dayKey(ts) {
     var d = new Date(ts);
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
   }
+  function dayTs(key) {
+    var p = String(key).split("-");
+    return new Date(+p[0], +p[1] - 1, +p[2]).getTime();
+  }
   function readDates() {
     var set = {};
-    state.history.forEach(function (h) { if (h.on) set[dayKey(h.ts)] = true; });
+    Object.keys(state.days).forEach(function (k) { if (state.days[k] > 0) set[k] = true; });
     return set;
+  }
+  function readingDayCount() {
+    return Object.keys(readDates()).length;
   }
   function streak() {
     var days = readDates();
@@ -263,21 +336,12 @@
   }
   function readsByDay() {
     // dayKey -> number of chapters marked read that day
-    var map = {};
-    state.history.forEach(function (h) {
-      if (!h.on) return;
-      var k = dayKey(h.ts);
-      map[k] = (map[k] || 0) + 1;
-    });
-    return map;
+    return state.days;
   }
   function bestStreak() {
     var keys = Object.keys(readDates());
     if (!keys.length) return 0;
-    var days = keys.map(function (k) {
-      var p = k.split("-");
-      return new Date(+p[0], +p[1] - 1, +p[2]).getTime();
-    }).sort(function (a, b) { return a - b; });
+    var days = keys.map(dayTs).sort(function (a, b) { return a - b; });
     var best = 1, run = 1;
     for (var i = 1; i < days.length; i++) {
       if (Math.round((days[i] - days[i - 1]) / 864e5) === 1) {
@@ -292,7 +356,9 @@
   function weekCount() {
     var cutoff = Date.now() - 7 * 864e5;
     var n = 0;
-    state.history.forEach(function (h) { if (h.on && h.ts >= cutoff) n++; });
+    Object.keys(state.days).forEach(function (k) {
+      if (dayTs(k) >= cutoff) n += state.days[k];
+    });
     return n;
   }
   function relTime(ts) {
@@ -324,8 +390,15 @@
     var next = typeof value === "boolean" ? value : !arr[chapter - 1];
     if (arr[chapter - 1] === next) return;
     arr[chapter - 1] = next;
-    state.history.unshift({ b: book, c: chapter, ts: Date.now(), on: next });
-    state.history = state.history.slice(0, 500);
+    var ts = Date.now();
+    if (next) {
+      // Permanent tallies that survive the history trim above them.
+      var k = dayKey(ts);
+      state.days[k] = (state.days[k] || 0) + 1;
+      state.bookLast[book] = ts;
+    }
+    state.history.unshift({ b: book, c: chapter, ts: ts, on: next });
+    state.history = state.history.slice(0, HISTORY_CAP);
     save();
     render();
   }
@@ -346,8 +419,11 @@
     var resume = inProgressBooks().slice(0, 6);
     var chips = resume.map(function (b) {
       var s = bookStats(b.name);
-      return '<button class="resume-chip" data-resume="' + esc(b.name) + '">' +
-        esc(b.name) + " " + s.next + " <small>" + fmtPct(s.pct) + "</small></button>";
+      var when = state.bookLast[b.name];
+      return '<button class="resume-chip" data-resume="' + esc(b.name) + '"' +
+        ' title="' + esc(b.name) + (when ? " — last marked read " + relTime(when) : "") + '">' +
+        esc(b.name) + " " + s.next + " <small>" + fmtPct(s.pct) + "</small>" +
+        (when ? " <small>" + relTime(when) + "</small>" : "") + "</button>";
     }).join("");
     // Nothing logged yet — a brand-new (or freshly reset) tracker. Say what this
     // is and how progress is kept, instead of a bare "Up next Genesis 1".
@@ -434,12 +510,41 @@
       el.textContent = "Store unavailable — progress will not persist between sessions. Export to back up.";
       return;
     }
-    var logged = 0;
-    state.history.forEach(function (h) { if (h.on) logged++; });
+    var all = totals(null);
     var noted = Object.keys(state.notes).length;
     var where = (typeof location !== "undefined") ? location.protocol + "//" + location.host + location.pathname : "app";
-    el.textContent = "Store: " + where + " · " + logged + " reads logged · " + noted + " notes · " +
-      (state.savedAt ? "last saved " + relTime(state.savedAt) + "." : "nothing saved yet.");
+    el.textContent = "Store: " + where + " · " + all.read.toLocaleString() + " of " + all.total.toLocaleString() +
+      " chapters read · " + noted + " note" + (noted === 1 ? "" : "s") + " · " +
+      (state.savedAt ? "last saved " + relTime(state.savedAt) : "nothing saved yet") +
+      " · " + (state.lastExport ? "last backup " + relTime(state.lastExport) : "no backup yet") + ".";
+  }
+  // Backup nudge: the browser can lose this store without warning, so the
+  // settings dialog keeps a quiet running commentary on how stale a backup is.
+  function renderBackupStatus() {
+    var el = $("backupStatus");
+    if (!el) return;
+    var logged = 0;
+    Object.keys(state.days).forEach(function (k) { logged += state.days[k]; });
+    if (!logged) {
+      el.textContent = "Nothing logged yet. Export saves a JSON copy you can restore on any device.";
+      return;
+    }
+    if (!state.lastExport) {
+      el.textContent = "⚠️ No backup yet — " + logged + " chapter" + (logged === 1 ? "" : "s") +
+        " logged in this browser only. Export a JSON copy so a cleared cache can't take them with it.";
+      return;
+    }
+    var since = 0;
+    state.history.forEach(function (h) { if (h.on && h.ts > state.lastExport) since++; });
+    var sinceTxt = since >= HISTORY_CAP ? "500+" : String(since);
+    var stale = Date.now() - state.lastExport > 30 * 864e5;
+    if (stale && since > 0) {
+      el.textContent = "⚠️ Last backup " + relTime(state.lastExport) + " (" + sinceTxt +
+        " read" + (since === 1 ? "" : "s") + " since). Export to bring it up to date.";
+    } else {
+      el.textContent = "Last backup " + relTime(state.lastExport) +
+        (since > 0 ? " · " + sinceTxt + " read" + (since === 1 ? "" : "s") + " since." : ".");
+    }
   }
   function renderPlan() {
     var el = $("planCard");
@@ -547,7 +652,8 @@
     }
     var pts = cumulativeSeries();
     var chart = pts.length > 1
-      ? cumulativeSvg(pts) + '<p class="heatmap-legend">Cumulative chapters logged in the app (' + pts.length + " reads).</p>"
+      ? cumulativeSvg(pts) + '<p class="heatmap-legend">Cumulative chapters logged in the app (' +
+        pts[pts.length - 1].n + " chapters over " + pts.length + " reading day" + (pts.length === 1 ? "" : "s") + ").</p>"
       : "";
     var fire = st > 0
       ? '<span class="streak-fire">🔥 ' + st + "-day streak</span>"
@@ -558,13 +664,15 @@
       '<div class="year-heatmap">' + cells + '</div><p class="heatmap-legend">Last 26 weeks — darker green means more chapters that day.</p>' +
       chart;
 
+    var daysRead = readingDayCount();
     if (!state.history.length) {
       $("recentHint").textContent = "";
       list.innerHTML = '<li class="empty-note" style="border:none;background:none;padding:0">' +
         "No reads logged here yet — mark a chapter below and it will show up here with a timestamp, feeding your streak.</li>";
       return;
     }
-    $("recentHint").textContent = state.history.length + " logged";
+    $("recentHint").textContent = daysRead + " reading day" + (daysRead === 1 ? "" : "s") +
+      " · last " + Math.min(state.history.length, 20) + " events";
     list.innerHTML = state.history.slice(0, 20).map(function (h) {
       return "<li><span class='" + (h.on ? "" : "undone") + "'>" + (h.on ? "✓ " : "○ ") +
         esc(h.b) + " " + h.c + (h.on ? "" : " (unmarked)") + "</span><time>" + relTime(h.ts) + "</time></li>";
@@ -580,7 +688,12 @@
       if (filters.status === "complete" && s.pct !== 1) return false;
       if (filters.status === "not-started" && s.pct !== 0) return false;
       if (filters.status === "in-progress" && (s.pct === 0 || s.pct === 1)) return false;
-      if (q && b.name.toLowerCase().indexOf(q) === -1) return false;
+      if (q) {
+        // Matches the book name, Bible.com code, genre or category.
+        var hay = (b.name + " " + bibleCode(b.name) + " " + (b.classification || "") + " " +
+          (b.category || "") + " " + (b.subCategory || "")).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
       return true;
     });
     if (filters.sort === "progress-desc") books = books.slice().sort(function (a, b) { return bookStats(b.name).pct - bookStats(a.name).pct; });
@@ -724,6 +837,7 @@
     renderRecent();
     renderBooks();
     renderStorageStatus();
+    renderBackupStatus();
   }
 
   // ---------- Controls ----------
@@ -848,12 +962,16 @@
 
     // Export / import / reset
     $("exportBtn").addEventListener("click", function () {
-      var payload = { app: "bible-tracker", version: 2, exportedAt: new Date().toISOString(), translation: state.translation, read: state.read, history: state.history, plan: state.plan, notes: state.notes, notif: { enabled: state.notif.enabled, time: state.notif.time } };
+      var payload = { app: "bible-tracker", version: 3, exportedAt: new Date().toISOString(), translation: state.translation, read: state.read, history: state.history, days: state.days, bookLast: state.bookLast, plan: state.plan, notes: state.notes, notif: { enabled: state.notif.enabled, time: state.notif.time } };
       var blob = new Blob([JSON.stringify(payload, null, 1)], { type: "application/json" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "bible-tracker-progress.json";
       a.click();
+      state.lastExport = Date.now();
+      save();
+      renderBackupStatus();
+      renderStorageStatus();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
     });
     $("importBtn").addEventListener("click", function () { $("importFile").click(); });
@@ -872,7 +990,18 @@
             }
           });
           state.read = st.read;
-          if (Array.isArray(data.history)) state.history = data.history.slice(0, 500);
+          var hist = cleanHistory(data.history);
+          state.history = hist.slice(0, HISTORY_CAP);
+          // Restore the permanent tallies if the file has them, else rebuild from its log.
+          state.days = {};
+          state.bookLast = {};
+          if (data.days) validDayCounts(data.days, state.days);
+          if (data.bookLast) state.bookLast = validLastReads(data.bookLast);
+          if (!data.days || !data.bookLast) {
+            var derived = talliesFromHistory(hist);
+            if (!data.days) state.days = derived.days;
+            if (!data.bookLast) state.bookLast = derived.bookLast;
+          }
           if (typeof data.translation === "string" && validTranslation(data.translation)) state.translation = data.translation;
           if (data.plan && (data.plan.target === null || typeof data.plan.target === "string")) state.plan = { target: data.plan.target || null };
           if (data.notes && typeof data.notes === "object") {
