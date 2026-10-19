@@ -52,6 +52,69 @@ function loadSeed() {
 }
 
 // ---------- minimal DOM ----------
+// ---------- tiny HTML parser for the stub DOM ----------
+// Lets the test reach into rendered markup (chapter buttons, bulk-mark buttons)
+// the way a real browser would, instead of only elements with an id.
+function parseAttrs(str) {
+  var attrs = {};
+  var re = /(\w[\w-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
+  var m;
+  while ((m = re.exec(str))) {
+    var k = m[1];
+    var v = m[2] !== undefined ? m[2] : (m[3] !== undefined ? m[3] : (m[4] !== undefined ? m[4] : ""));
+    attrs[k] = v;
+  }
+  return attrs;
+}
+function parseTags(html) {
+  var tags = [];
+  if (!html) return tags;
+  var re = /<([a-zA-Z]+)([^>]*)>/g;
+  var m;
+  while ((m = re.exec(html))) {
+    var attrs = parseAttrs(m[2]);
+    var classes = attrs["class"] ? String(attrs["class"]).split(/\s+/) : [];
+    tags.push({ tag: m[1], attrs: attrs, classes: classes });
+  }
+  return tags;
+}
+function matchesSelector(tag, sel) {
+  sel = String(sel).trim();
+  if (!sel) return false;
+  var parts = sel.split(/\s+/);
+  if (parts.length > 1) return false;
+  var s = parts[0];
+  if (s.charAt(0) === ".") return tag.classes.indexOf(s.slice(1)) !== -1;
+  if (s.charAt(0) === "[" && s.charAt(s.length - 1) === "]") {
+    var inner = s.slice(1, -1);
+    var eqi = inner.indexOf("=");
+    var attr, val, hasVal;
+    if (eqi === -1) { attr = inner; hasVal = false; }
+    else { attr = inner.slice(0, eqi); val = inner.slice(eqi + 1); hasVal = true;
+      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') val = val.slice(1, -1);
+    }
+    if (!hasVal) return Object.prototype.hasOwnProperty.call(tag.attrs, attr);
+    return tag.attrs[attr] === val;
+  }
+  return tag.tag === s;
+}
+
+function queryAll(el, sel) {
+  var parsed = parseTags(el.innerHTML);
+  var out = [];
+  parsed.forEach(function (t) {
+    if (!matchesSelector(t, sel)) return;
+    var stub = makeElement(t.attrs.id || "");
+    Object.keys(t.attrs).forEach(function (k) { stub.dataset[k] = t.attrs[k]; });
+    stub.getAttribute = function (k) { return Object.prototype.hasOwnProperty.call(t.attrs, k) ? t.attrs[k] : null; };
+    stub.setAttribute = function (k, v) { t.attrs[k] = v; };
+    stub.classList.contains = function (c) { return t.classes.indexOf(c) !== -1; };
+    stub.click = function (ev) { (stub._handlers.click || []).forEach(function (fn) { fn(ev || {}); }); };
+    out.push(stub);
+  });
+  return out;
+}
+
 function makeElement(id) {
   var handlers = {};
   var el = {
@@ -78,8 +141,8 @@ function makeElement(id) {
     click: function () { (handlers.click || []).forEach(function (fn) { fn(); }); },
     remove: function () {},
     scrollIntoView: function () {},
-    querySelector: function () { return null; },
-    querySelectorAll: function () { return []; }
+    querySelector: function (sel) { var r = queryAll(el, sel); return r.length ? r[0] : null; },
+    querySelectorAll: function (sel) { return queryAll(el, sel); }
   };
   return el;
 }
@@ -108,23 +171,26 @@ function boot(store) {
     removeItem: function (k) { kv.delete(k); }
   };
   var location = { protocol: "https:", host: "example.test", pathname: "/index.html", href: "https://example.test/index.html" };
+  var win = { BIBLE_SEED: SEED, __BT_TEST: true };
   var fn = new Function(
     "window", "document", "localStorage", "location", "CSS",
     "setInterval", "clearInterval", "Notification", appSrc
   );
-  fn({ BIBLE_SEED: SEED }, doc, storage, location, { escape: function (s) { return s; } },
+  fn(win, doc, storage, location, { escape: function (s) { return s; } },
      function () { return 0; }, function () {}, undefined);
   return {
     doc: doc,
     state: function () { return kv.has(STORE_KEY) ? JSON.parse(kv.get(STORE_KEY)) : null; },
     text: function (id) { return doc.getElementById(id).textContent; },
     html: function (id) { return doc.getElementById(id).innerHTML; },
-    click: function (id) {
+    click: function (id, ev) {
       var el = doc.getElementById(id);
       var handlers = el._handlers.click;
       if (!handlers || !handlers.length) throw new Error("no click handler on #" + id);
-      handlers[0]();
-    }
+      handlers[0](ev || {});
+    },
+    gridEl: doc.getElementById("bookGrid"),
+    __bt: win.__bt
   };
 }
 
@@ -268,6 +334,84 @@ if (!busyErr) {
   ok("totals still intact", Object.keys(busySave.days).reduce(function (n, k) { return n + busySave.days[k]; }, 0) >= DAYS * PER_DAY, "sum of day counts");
   ok("chart covers every reading day", busy.html("streakBlock").indexOf(DAYS + " reading days") !== -1);
 }
+
+// ---------- 7. bulk marking + undo ----------
+section("bulk marking");
+var bulk = boot(null);
+
+function findRest(b, name) {
+  var out = null;
+  b.gridEl.querySelectorAll("[data-mark-rest]").forEach(function (btn) {
+    if (btn.getAttribute("data-mark-rest") === name) out = btn;
+  });
+  return out;
+}
+var genRest = findRest(bulk, "Genesis");
+ok("Genesis offers 'mark all left'", !!genRest, "no mark-all button for an unread book");
+
+// Bulk-mark every remaining chapter in Genesis via the exposed mutation.
+var n = bulk.__bt.bulkApply("Genesis", (function () {
+  var arr = bulk.state() ? null : null;
+  var out = []; for (var i = 1; i <= 50; i++) out.push(i); return out;
+})(), true);
+// Only the unread ones count.
+var bulkState = bulk.state();
+eq("bulk marks every chapter", bulkState.read.Genesis.reduce(function (n, x) { return n + (x ? 1 : 0); }, 0), 50);
+eq("bulk reports the count", n, 50);
+eq("day tally grows by the count", bulkState.days[localDayKey(Date.now())], 50);
+ok("undo toast appears", bulk.doc.getElementById("undoToast").hidden === false);
+// Undo restores everything.
+bulk.__bt.undoBulk();
+var undone = bulk.state();
+eq("undo restores the read array", undone.read.Genesis.reduce(function (n, x) { return n + (x ? 1 : 0); }, 0), 0);
+ok("undo clears the day tally", undone.days[localDayKey(Date.now())] === undefined, JSON.stringify(undone.days));
+ok("undo hides the toast", bulk.doc.getElementById("undoToast").hidden === true);
+
+// A fully read book offers no bulk button.
+var full = boot(null);
+var g = findRest(full, "Genesis");
+if (g) g.click(); // mark all (via UI is not wired to handlers in the stub, so use __bt)
+// Re-mark via __bt to make it complete, then re-render by toggling a filter? render happens inside bulkApply.
+full.__bt.bulkApply("Genesis", (function(){var o=[];for(var i=1;i<=50;i++)o.push(i);return o;})(), true);
+ok("no 'mark all left' on a complete book", findRest(full, "Genesis") === null);
+
+// Undo a bulk action that changed nothing is a no-op.
+var noop = boot(null);
+var noopErr = null;
+try { noop.__bt.undoBulk(); } catch (e) { noopErr = e.message; }
+ok("undo with no pending action is harmless", !noopErr, noopErr);
+
+// Bulk marking a book that is already complete changes nothing.
+var already = boot(null);
+already.__bt.bulkApply("Genesis", (function(){var o=[];for(var i=1;i<=50;i++)o.push(i);return o;})(), true);
+var r2 = already.__bt.bulkApply("Genesis", (function(){var o=[];for(var i=1;i<=50;i++)o.push(i);return o;})(), true);
+eq("bulk on a complete book changes nothing", r2, 0);
+
+// Shift-click range logic mirrors a toggle: marking 2..5 of Exodus.
+var range = boot(null);
+range.__bt.logAndToggle("Exodus", 2, true); // anchor + mark
+// Simulate the range computation the UI does.
+var chapters = []; for (var c = 2; c <= 5; c++) chapters.push(c);
+var rn = range.__bt.bulkApply("Exodus", chapters, false);
+// Exodus 2 was read; range takes the opposite of the clicked chapter's prior state (unread -> ... )
+// Here we explicitly unmark 2..5; verify 2 becomes unread and others untouched.
+var rs = range.state();
+ok("range unmarks chapter 2", rs.read.Exodus[1] === false);
+ok("range leaves chapter 1 unread", rs.read.Exodus[0] === false);
+// Re-mark via a fresh range to confirm marking works.
+var range2 = boot(null);
+range2.__bt.bulkApply("Exodus", [2,3,4,5], true);
+var rs2 = range2.state();
+ok("range marks 2", rs2.read.Exodus[1] === true);
+ok("range marks 3", rs2.read.Exodus[2] === true);
+ok("range marks 4", rs2.read.Exodus[3] === true);
+ok("range marks 5", rs2.read.Exodus[4] === true);
+ok("range leaves 1 unread", rs2.read.Exodus[0] === false);
+ok("range leaves 6 unread", rs2.read.Exodus[5] === false);
+
+// Undo restores after a range mark.
+range2.__bt.undoBulk();
+ok("range undo restores chapter 2", range2.state().read.Exodus[1] === false);
 
 // ---------- summary ----------
 console.log("\n" + (failures ? "\u2717 " + failures + " of " + checks + " checks failed" : "\u2713 all " + checks + " checks passed"));

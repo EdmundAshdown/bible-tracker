@@ -383,9 +383,12 @@
 
   // ---------- Filters (not persisted) ----------
   var filters = { q: "", testament: "all", status: "all", genre: "all", sort: "canonical" };
+  // Transient UI state for shift-click range marking (not persisted).
+  var rangeAnchor = {};
 
   // ---------- Mutations ----------
   function logAndToggle(book, chapter /* 1-based */, value) {
+    clearUndo();
     var arr = state.read[book];
     var next = typeof value === "boolean" ? value : !arr[chapter - 1];
     if (arr[chapter - 1] === next) return;
@@ -404,6 +407,75 @@
   }
 
   // ---------- Render ----------
+  // ---------- Bulk marking + single-level undo ----------
+  // Only one bulk action is undoable at a time; any other mutation clears the
+  // snapshot so Undo can never clobber newer work.
+  var undoSnapshot = null;
+  var undoTimer = null;
+  function clearUndo() {
+    undoSnapshot = null;
+    if (undoTimer) { clearTimeout(undoTimer); undoTimer = null; }
+    var t = $("undoToast");
+    if (t) t.hidden = true;
+  }
+  function showUndo(message) {
+    var t = $("undoToast");
+    if (!t) return;
+    $("undoMsg").textContent = message;
+    t.hidden = false;
+    if (undoTimer) clearTimeout(undoTimer);
+    undoTimer = setTimeout(function () { t.hidden = true; }, 8000);
+    if (undoTimer && typeof undoTimer.unref === "function") undoTimer.unref();
+  }
+  function bulkApply(book, chapters, value) {
+    var arr = state.read[book];
+    var changed = [];
+    (chapters || []).forEach(function (ch) {
+      if (ch < 1 || ch > arr.length) return;
+      if (arr[ch - 1] === value) return;
+      changed.push(ch);
+    });
+    if (!changed.length) return 0;
+    var ts = Date.now();
+    var k = dayKey(ts);
+    var snapshot = {
+      book: book,
+      read: arr.slice(),
+      history: state.history.slice(),
+      dayKey: k,
+      daysVal: Object.prototype.hasOwnProperty.call(state.days, k) ? state.days[k] : undefined,
+      bookLast: Object.prototype.hasOwnProperty.call(state.bookLast, book) ? state.bookLast[book] : undefined
+    };
+    changed.forEach(function (ch) {
+      arr[ch - 1] = value;
+      state.history.unshift({ b: book, c: ch, ts: ts, on: value });
+    });
+    state.history = state.history.slice(0, HISTORY_CAP);
+    if (value) {
+      var marked = changed.length;
+      state.days[k] = (state.days[k] || 0) + marked;
+      state.bookLast[book] = ts;
+    }
+    undoSnapshot = snapshot;
+    save();
+    render();
+    return changed.length;
+  }
+  function undoBulk() {
+    if (!undoSnapshot) return;
+    var s = undoSnapshot;
+    state.read[s.book] = s.read.slice();
+    state.history = s.history.slice();
+    if (s.daysVal === undefined) delete state.days[s.dayKey];
+    else state.days[s.dayKey] = s.daysVal;
+    if (s.bookLast === undefined) delete state.bookLast[s.book];
+    else state.bookLast[s.book] = s.bookLast;
+    undoSnapshot = null;
+    clearUndo();
+    save();
+    render();
+  }
+
   var $ = function (id) { return document.getElementById(id); };
 
   function renderHero() {
@@ -752,7 +824,9 @@
         action = '<span class="next-label">✓ Complete</span>' +
           '<a class="link-btn" href="' + chapterUrl(b.name, 1) + '" target="_blank" rel="noopener">Re-read ↗</a>';
       } else {
+        var left = s.total - s.read;
         action = '<button class="btn primary small" data-mark="' + esc(b.name) + '" data-ch="' + s.next + '">Mark ' + esc(b.name) + " " + s.next + " ✓</button>" +
+          (left > 1 ? ' <button class="btn ghost small" data-mark-rest="' + esc(b.name) + '" title="Mark the remaining ' + left + ' chapters of ' + esc(b.name) + ' as read today (undoable)">Mark all ' + left + ' left</button>' : "") +
           '<a class="link-btn" href="' + chapterUrl(b.name, s.next) + '" target="_blank" rel="noopener">Open ↗</a>';
       }
       return '<article class="card book-card' + (s.next === -1 ? " complete" : "") + '" data-book-card="' + esc(b.name) + '">' +
@@ -768,13 +842,38 @@
     }).join("") || '<p class="empty-note">No books match these filters.</p>';
 
     grid.querySelectorAll(".chapter").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        logAndToggle(btn.getAttribute("data-book"), parseInt(btn.getAttribute("data-ch"), 10));
+      btn.addEventListener("click", function (ev) {
+        ev = ev || {};
+        var name = btn.getAttribute("data-book");
+        var ch = parseInt(btn.getAttribute("data-ch"), 10);
+        var anchor = rangeAnchor[name];
+        if (ev.shiftKey && anchor && anchor !== ch) {
+          var lo = Math.min(anchor, ch), hi = Math.max(anchor, ch);
+          var chapters = [];
+          for (var c = lo; c <= hi; c++) chapters.push(c);
+          var value = !state.read[name][ch - 1];
+          var n = bulkApply(name, chapters, value);
+          if (n) showUndo((value ? "Marked " : "Unmarked ") + name + " " + lo + "\u2013" + hi +
+            " (" + n + " chapter" + (n > 1 ? "s" : "") + ") \u2014 counted as today");
+          rangeAnchor[name] = ch;
+          return;
+        }
+        rangeAnchor[name] = ch;
+        logAndToggle(name, ch);
       });
     });
     grid.querySelectorAll("[data-mark]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         logAndToggle(btn.getAttribute("data-mark"), parseInt(btn.getAttribute("data-ch"), 10), true);
+      });
+    });
+    grid.querySelectorAll("[data-mark-rest]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var name = btn.getAttribute("data-mark-rest");
+        var arr = state.read[name], chapters = [];
+        for (var i = 0; i < arr.length; i++) if (!arr[i]) chapters.push(i + 1);
+        var n = bulkApply(name, chapters, true);
+        if (n) showUndo("Marked all " + n + " remaining chapter" + (n > 1 ? "s" : "") + " in " + name + " \u2014 counted as today");
       });
     });
     grid.querySelectorAll("[data-notes]").forEach(function (btn) {
@@ -1024,14 +1123,27 @@
     });
     $("resetBtn").addEventListener("click", function () {
       if (!confirm("Clear all reading progress, notes and history, and start over with an empty tracker?")) return;
+      clearUndo();
       state = defaultState();
       try { localStorage.removeItem(STORE_KEY); } catch (e) {}
       filters = { q: "", testament: "all", status: "all", genre: "all", sort: "canonical" };
       syncFilterInputs(); syncTranslationSelect(); syncNotif();
       render();
     });
+    $("undoBtn").addEventListener("click", function () { undoBulk(); });
   }
 
   initControls();
   render();
+  // Test-only hooks: only exposed when the page is booted with window.__BT_TEST,
+  // so production builds keep their private scope.
+  if (typeof window !== "undefined" && window.__BT_TEST) {
+    window.__bt = {
+      bulkApply: bulkApply,
+      undoBulk: undoBulk,
+      logAndToggle: logAndToggle,
+      clearUndo: clearUndo,
+      rangeAnchor: rangeAnchor
+    };
+  }
 })();

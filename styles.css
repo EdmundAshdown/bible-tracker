@@ -214,6 +214,17 @@ select, input[type="search"] {
 .store-banner code { color: var(--accent); }
 .update-banner { background: rgba(61, 220, 132, 0.12); border-color: rgba(61, 220, 132, 0.5); }
 .store-banner .btn { margin-left: 8px; vertical-align: middle; }
+.undo-toast {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  z-index: 60; display: flex; align-items: center; gap: 12px;
+  background: rgba(20, 24, 34, 0.96); color: var(--text);
+  border: 1px solid var(--card-border); border-radius: 12px;
+  padding: 10px 14px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  max-width: calc(100vw - 24px);
+}
+.undo-toast[hidden] { display: none; }
+.undo-toast #undoMsg { flex: 1; min-width: 0; }
+.undo-toast .btn { flex: 0 0 auto; }
 .storage-status { color: var(--muted); font-size: 12px; }
 
 /* ---------- Plan + streams ---------- */
